@@ -1,0 +1,22 @@
+{
+  "name": "nadi-json-mock-data",
+  "version": "1.0.0",
+  "description": "Mock Data",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "14"
+  },
+  "scripts": {
+    "dev": "nodemon index.mjs"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
