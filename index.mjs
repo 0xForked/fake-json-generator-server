@@ -1,6 +1,8 @@
 import app from './src/app/index.mjs'
 import http from 'http'
 
+global.__dirname = process.cwd()
+
 const server = http.createServer(app)
 const port = 3000
 
