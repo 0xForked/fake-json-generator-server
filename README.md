@@ -15,5 +15,5 @@ $ yarn dev
 ## Generate Random Product
 
 ```bash
-$ node mock/generator/index.mjs
+$ yarn gen
 ```
