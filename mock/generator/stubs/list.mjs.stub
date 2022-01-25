@@ -1,0 +1,10 @@
+import path from 'path'
+import fs from 'fs'
+
+export default function(req, res) {
+    const {0}DataPath = path.join(__dirname, 'mock', 'data', '{0}s.json')
+    const {1}DataFile = fs.readFileSync({2}DataPath, 'utf8')
+    const {3}s = JSON.parse({4}DataFile)
+
+    res.send({ code: 200, status: "OK", data: {5}s })
+}

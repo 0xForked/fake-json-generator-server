@@ -6,5 +6,5 @@ export default function(app) {
 
     routes.get('/', list)
 
-    app.use('/wishlists', routes)
+    app.use('/examples', routes)
 }

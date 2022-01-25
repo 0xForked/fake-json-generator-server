@@ -1,0 +1,11 @@
+import faker from '@faker-js/faker'
+
+function {0}() {
+    return {
+        _id: faker.datatype.uuid(),
+    }
+}
+
+export function {1}(total) {
+    return Array.from({ length: total }, {2})
+}

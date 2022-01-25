@@ -6,5 +6,5 @@ export default function(app) {
 
     routes.get('/', list)
 
-    app.use('/categories', routes)
+    app.use('/{0}', routes)
 }
