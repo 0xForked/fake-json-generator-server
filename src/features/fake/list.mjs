@@ -5,10 +5,10 @@ export default function(req, res) {
    let data = loadData(req, res)
 
     if (req.query.id || req.query.name) {
-        applyFilter(req, res, data)
+        return applyFilter(req, res, data)
     }
 
-    res.send({ code: 200, status: "OK", data: data })
+    return res.send({ code: 200, status: "OK", data: data })
 }
 
 function loadData(req, res) {
@@ -24,16 +24,19 @@ function loadData(req, res) {
 }
 
 function applyFilter(req, res, data) {
-    for (let key in data) {
-        if (data.hasOwnProperty(key) && req.query.name) {
-            if (data[key]["name"].toLowerCase() === req.query.name.toLowerCase()) {
-                return res.send({
-                    code: 200,
-                    status: "OK",
-                    data: data[key]
-                })
-            }
+    let collection = []
+    data.forEach(function (obj, index) {
+        if (req.query.name && obj.name.toLowerCase() === req.query.name.toLowerCase()) {
+            collection.push(obj)
         }
+    })
+
+    if (collection.length > 0) {
+        return res.send({
+            code: 200,
+            status: "OK",
+            data: collection
+        })
     }
 
     return res.status(404).send({ code: 404, status: "NOT_FOUND" })
