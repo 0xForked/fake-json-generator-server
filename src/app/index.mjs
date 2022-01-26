@@ -17,10 +17,17 @@ routes(app)
 
 // home and not found handler
 app.get('/', (req, res) => {
-    res.send({code: 200, message: "welcome to mock json data"})
+    res.send({
+        code: 200,
+        message: "welcome to mock json data"
+    })
 })
+
 app.get('*', (req, res) => {
-    res.send({code: 404, message: "path that you're looking for not found"})
+    res.status(404).send({
+        code: 404,
+        message: "path that you're looking for not found"
+    })
 })
 
 export default app

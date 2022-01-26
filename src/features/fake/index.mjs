@@ -4,7 +4,7 @@ import list from './list.mjs'
 export default function(app) {
     const routes = express.Router()
 
-    routes.get('/', list)
+    routes.get('/:data', list)
 
-    app.use('/examples', routes)
+    app.use('/fake', routes)
 }

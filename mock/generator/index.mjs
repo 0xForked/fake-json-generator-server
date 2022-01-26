@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+// import { generateAllData } from './data.mjs'
 
 global.__dirname = process.cwd()
 
@@ -18,55 +19,46 @@ if (argv[0] === scaffold) {
 
     const collection = argv[1]
 
-    copyStub(collection)
-    searchReplaceVariable(collection)
+    makeNewFromStub(collection)
+    replaceStubVar(collection)
+    registerCollection(collection)
+
+    console.log(`collection ${argv[1]} successfully created!`)
+    console.log(`You can edit the data model at ${path.join(__dirname, 'data', collection+'.mjs' )}`)
 }
 
-function copyStub(collection) {
-    // copy collection stub
+if (argv[0] === fake) {
+    if (! argv[1]) {
+        // generateAllData()
+    }
+
+    console.log(`just generate specified data  ${argv[1]}`)
+}
+
+function makeNewFromStub(collection) {
+    // generate new collection
     const collectionStub = path.join(__dirname, 'mock', 'generator', 'stubs', 'collection.mjs.stub')
     const collectionSDest = path.join(__dirname, 'mock', 'collections', `${collection}.mjs`)
+
+    if(fs.existsSync(collectionSDest)) {
+        console.log(`collection ${collection} was exists`)
+        process.exit(0)
+    }
+
     fs.copyFileSync(collectionStub, collectionSDest)
-
-    // create new features directory
-    const dir = path.join(__dirname, 'src', 'features', collection)
-    fs.mkdirSync(dir, { recursive: true });
-
-    // copy features index file stub
-    const featureIndexStub = path.join(__dirname, 'mock', 'generator', 'stubs', 'index.mjs.stub')
-    const featureIndexDest = path.join(__dirname, 'src', 'features', collection, 'index.mjs')
-    fs.copyFileSync(featureIndexStub, featureIndexDest)
-
-    // copy features list file stub
-    const featureListStub = path.join(__dirname, 'mock', 'generator', 'stubs', 'list.mjs.stub')
-    const featureListDest = path.join(__dirname, 'src', 'features', collection, 'list.mjs')
-    fs.copyFileSync(featureListStub, featureListDest)
 }
 
-function searchReplaceVariable(collection) {
+function replaceStubVar(collection) {
+    // update collection variable
     const collectionPath = path.join(__dirname, 'mock', 'collections', `${collection}.mjs`)
-    const featureIndexPath = path.join(__dirname, 'src', 'features', collection, 'index.mjs')
-    const featureListPath = path.join(__dirname, 'src', 'features', collection, 'list.mjs')
-
     const collectionFile = fs.createReadStream(collectionPath, 'utf8');
-    const featureIndexFile = fs.createReadStream(featureIndexPath, 'utf8');
-    const featureListFile = fs.createReadStream(featureListPath, 'utf8');
-
-    let newCollectionReplace = '';
-    let newFeatureIndexReplace = '';
-    let newFeatureListReplace = '';
-
     const collectionWordsToReplace = [
         `${collection}`,
         `generate${ucword(collection)}`,
         `${collection}`
     ]
-    const featureWordsToReplaceInIndex = [`${collection}`]
-    const featureWordsToReplaceInList = [
-        `${collection}`, `${collection}`, `${collection}`,
-        `${collection}`, `${collection}`, `${collection}`,
-    ]
 
+    let newCollectionReplace = '';
     collectionFile.on('data', function (data) {
         newCollectionReplace += collectionWordsToReplace.reduce(
             (f, s, i) => `${f}`.replace(`{${i}}`, s),
@@ -74,31 +66,15 @@ function searchReplaceVariable(collection) {
         )
     })
 
-    featureIndexFile.on('data', function (data) {
-        newFeatureIndexReplace += featureWordsToReplaceInIndex.reduce(
-            (f, s, i) => `${f}`.replace(`{${i}}`, s),
-            data
-        )
-    })
+    collectionFile.on('end',  () => { fs.writeFileSync(collectionPath, newCollectionReplace) })
+}
 
-    featureListFile.on('data', function (data) {
-        newFeatureListReplace += featureWordsToReplaceInList.reduce(
-            (f, s, i) => `${f}`.replace(`{${i}}`, s),
-            data
-        )
-    })
-
-    collectionFile.on('end', function () {
-        fs.writeFileSync(collectionPath, newCollectionReplace)
-    })
-
-    featureIndexFile.on('end', function () {
-        fs.writeFileSync(featureIndexPath, newFeatureIndexReplace)
-    })
-
-    featureListFile.on('end', function () {
-        fs.writeFileSync(featureListPath, newFeatureListReplace)
-    })
+function registerCollection(collection) {
+    // add to data generator
+    let dataGenPath = path.join(__dirname, 'mock', 'generator', 'data.mjs')
+    let dataGenRows = fs.readFileSync(dataGenPath).toString().split('\n');
+    dataGenRows.unshift(`import { generate${ucword(collection)} } from '../collections/${collection}.mjs'`);
+    fs.writeFileSync(dataGenPath, dataGenRows.join('\n'));
 }
 
 function ucword(str){
