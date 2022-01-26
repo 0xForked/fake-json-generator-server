@@ -1,4 +1,6 @@
 import faker from '@faker-js/faker'
+import fs from 'fs'
+import path from "path";
 
 function {0}() {
     return {
@@ -6,6 +8,11 @@ function {0}() {
     }
 }
 
-export function {1}(total) {
-    return Array.from({ length: total }, {2})
+export default function (total) {
+    let data = Array.from({ length: total }, {1})
+
+    const dataPath = path.join(__dirname, 'mock', 'data', '{2}s.json')
+    fs.writeFileSync(dataPath, JSON.stringify(data, null, 2))
+
+    return data
 }

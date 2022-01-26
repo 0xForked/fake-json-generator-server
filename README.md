@@ -22,18 +22,21 @@ Generate stub data for a new collection.
 ```bash
 $ yarn gen scaffold {name}
 ```
-this action will:
-1. create a new file in `mock/generator/collections/{name}.mjs`
-2. copy stub file in `mock/generator/stubs/{name}.mjs` and create folder in `src/features/{name}`
-3. you can update the collection file to add your data model (key, value, etc.)
 
-Generate fake data for a new collection.
+### Fake Data
+
+Generate fake data for all collection.
 
 ```bash
 $ yarn gen fake
 ```
 
-this action will:
+Generate fake data for specified collection
 
-1. create json data
-2. and you can access it by `http://host:port/scaffold_name`
+available options:
+1. collection name (required)
+2. total number of records (default: 3) (optional)
+
+```bash
+$ yarn gen fake {collection} {total}
+```

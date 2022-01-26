@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import { single as singleCollection, all as allCollection } from './data.mjs'
 
 global.__dirname = process.cwd()
 
@@ -28,10 +29,10 @@ if (argv[0] === scaffold) {
 
 if (argv[0] === fake) {
     if (! argv[1]) {
-        // generateAllData()
+        await allCollection()
     }
 
-    console.log(`just generate specified data  ${argv[1]}`)
+    await singleCollection(argv[1], argv[2])
 }
 
 function makeNewFromStub(collection) {
@@ -51,13 +52,9 @@ function replaceStubVar(collection) {
     // update collection variable
     const collectionPath = path.join(__dirname, 'mock', 'collections', `${collection}.mjs`)
     const collectionFile = fs.createReadStream(collectionPath, 'utf8');
-    const collectionWordsToReplace = [
-        `${collection}`,
-        `generate${ucword(collection)}`,
-        `${collection}`
-    ]
-
+    const collectionWordsToReplace = [`${collection}`, `${collection}`, `${collection}`]
     let newCollectionReplace = '';
+
     collectionFile.on('data', function (data) {
         newCollectionReplace += collectionWordsToReplace.reduce(
             (f, s, i) => `${f}`.replace(`{${i}}`, s),
@@ -72,19 +69,7 @@ function registerCollection(collection) {
     // add to data generator
     let dataGenPath = path.join(__dirname, 'mock', 'generator', 'data.mjs')
     let dataGenRows = fs.readFileSync(dataGenPath).toString().split('\n');
-    console.log(dataGenRows)
-    dataGenRows.unshift(`import { generate${ucword(collection)} } from '../collections/${collection}.mjs'`);
-    dataGenRows.splice(-2, 0, `\tgenerate${ucword(collection)}(5)`)
+    dataGenRows.unshift(`import ${collection} from '../collections/${collection}.mjs'`);
+    dataGenRows.splice(-4, 0, `\tconsole.log(${collection}(3))`)
     fs.writeFileSync(dataGenPath, dataGenRows.join('\n'));
-}
-
-function ucword(str){
-    str = str.toLowerCase().replace(
-        /(^([a-zA-Z\p{M}]))|([ -][a-zA-Z\p{M}])/g,
-        function(replace_latter)
-    {
-        return replace_latter.toUpperCase();
-    })
-
-    return str
 }
