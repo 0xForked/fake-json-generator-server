@@ -24,14 +24,18 @@ function loadData(req, res) {
 }
 
 function applyFilter(req, res, data) {
-    let collection = []
+    let collection = {}
     data.forEach(function (obj, index) {
-        if (req.query.name && obj.name.toLowerCase() === req.query.name.toLowerCase()) {
-            collection.push(obj)
+        if (req.query.name && obj.name && (obj.name.toLowerCase() === req.query.name.toLowerCase())) {
+            collection = obj
+        }
+
+        if (req.query.id && obj._id && (obj._id.toLowerCase() === req.query.id.toLowerCase())) {
+            collection = obj
         }
     })
 
-    if (collection.length > 0) {
+    if (Object.keys(collection).length > 0) {
         return res.send({
             code: 200,
             status: "OK",
