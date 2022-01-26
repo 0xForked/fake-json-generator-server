@@ -1,6 +1,5 @@
 import fs from 'fs'
 import path from 'path'
-// import { generateAllData } from './data.mjs'
 
 global.__dirname = process.cwd()
 
@@ -73,7 +72,9 @@ function registerCollection(collection) {
     // add to data generator
     let dataGenPath = path.join(__dirname, 'mock', 'generator', 'data.mjs')
     let dataGenRows = fs.readFileSync(dataGenPath).toString().split('\n');
+    console.log(dataGenRows)
     dataGenRows.unshift(`import { generate${ucword(collection)} } from '../collections/${collection}.mjs'`);
+    dataGenRows.splice(-2, 0, `\tgenerate${ucword(collection)}(5)`)
     fs.writeFileSync(dataGenPath, dataGenRows.join('\n'));
 }
 
